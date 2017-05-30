@@ -1,0 +1,8 @@
+# Emoticon indicator
+indicator: '~'
+
+# Emoticon mappings
+mappings:
+  # Format - name,alias1,alias2,...: replacement
+  shrug: ¯\_(ツ)_/¯
+  fliptable,ft: ヽ(`Д´)ﾉ︵ ┻━┻
