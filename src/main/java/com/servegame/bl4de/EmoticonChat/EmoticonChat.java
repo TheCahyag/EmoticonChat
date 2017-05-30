@@ -1,11 +1,13 @@
 package com.servegame.bl4de.EmoticonChat;
 
 import com.google.inject.Inject;
+import com.servegame.bl4de.EmoticonChat.util.Config;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
 /**
@@ -18,6 +20,9 @@ public class EmoticonChat {
     private char INDICATOR;
 
 
+    /* Global Variables */
+    private Config config;
+
 
     /* Injects */
     @Inject
@@ -28,14 +33,17 @@ public class EmoticonChat {
 
     /* Server loading events */
     @Listener
-    public void onLoad(GameLoadCompleteEvent event){
-        this.INDICATOR = '~';
-        // would need to add keyword equivalents here TODO
-        this.logger.info("EmoticonChat has loaded");
+    public void onPreInit(GamePreInitializationEvent event){
+        //Load config
     }
 
     @Listener
     public void onInit(GameInitializationEvent event){
 
+    }
+
+    @Listener
+    public void onLoad(GameLoadCompleteEvent event){
+        this.logger.info("EmoticonChat has loaded");
     }
 }
