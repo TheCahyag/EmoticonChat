@@ -41,6 +41,10 @@ public class EmoticonChat {
     @Inject
     private Logger logger;
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     /* Server loading events */
     @Listener
     public void onPreInit(GamePreInitializationEvent event){
@@ -60,7 +64,7 @@ public class EmoticonChat {
     public void onInit(GameInitializationEvent event){
         this.indicator = this.config.getIndicator();
         this.emoticonMapping = this.config.getEmoticonMapping();
-        this.parser = new MessageParser(this.emoticonMapping, this.indicator);
+        this.parser = new MessageParser(this.emoticonMapping, this.indicator, this);
     }
 
     @Listener
