@@ -1,10 +1,10 @@
 # Emoticon indicator
-indicator: '~'
+indicator: ':'
 
 # Emoticon mappings
 mappings:
   # Format - name,alias1,alias2,...: replacement
-  # Illegal characters for the name: "',.<>?/\-+=*!@#$~%^&(){}[]`
+  # Illegal characters for the name: "':;,.<>?/\-+=*!@#$~%^&(){}[]`
   # Only use alphanumerics and underscores
   shrug: ¯\_(ツ)_/¯
   fliptable,ft: ヽ(`Д´)ﾉ︵ ┻━┻
