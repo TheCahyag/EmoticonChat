@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.ClickAction;
-import org.spongepowered.api.text.action.HoverAction;
-import org.spongepowered.api.text.action.ShiftClickAction;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextStyle;
+import org.spongepowered.api.text.TextElement;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,75 +35,16 @@ public class MessageParser {
      */
     public void parseMessage(MessageEvent event){
         Text message = event.getMessage();
-        //System.out.println(event.getOriginalMessage().toString());
         ImmutableList<Text> list = message.getChildren();
         Optional<Player> player = event.getCause().first(Player.class);
-        Player player1 = null;
+        Player player1;
         if (player.isPresent()) {
             player1 = player.get();
             String string = event.getOriginalMessage().toPlain();
             String sub = string.substring(player1.getDisplayNameData().displayName().get().toPlain().length() + 3, string.length());
             if (hasIndicator(string)){
-                event.setMessage(list.get(0), Text.of(replace(sub)), list.get(2));
+                event.setMessage(list.get(0), Text.of(formatString(replace(sub))), list.get(2));
             }
-            //event.setMessage(Text.of(string));
-
-
-//            player1 = player.get();
-//            //player1.hasPermission()
-//            for (int i = 0; i < list.size(); i++) {
-//                this.logger.info("Child " + i + ": " + list.get(i).toString());
-//            }
-//            if (list.size() == 3) {
-//                // This *should* determine messages sent from players, but might need a better check
-//                ImmutableList<Text> bodyChildren = list.get(1).getChildren();
-////                    .getChildren().get(0)
-////                    .getChildren().get(0)
-////                    .getChildren().get(0)
-////                    .getChildren(); // Yuck
-//                while (bodyChildren.size() == 1) {
-//                    bodyChildren = bodyChildren.get(0).getChildren();
-//                }
-//                Text newBody = Text.of("");
-//                for (int i = 0; i < bodyChildren.size(); i++) {
-//                    this.logger.info("BodyChild " + i + ": " + bodyChildren.get(i).toString());
-//                }
-//                for (Text text :
-//                        bodyChildren) {
-//                    // Iterate through each child in the body of the message
-//                    Text tmp;
-//                    String content = text.toPlain();
-//                    this.logger.info(content);
-//                    if (hasIndicator(content)) {
-//                        // If the message contains the indicator char
-//                        content = replace(content);
-//                        TextColor color = text.getColor();
-//                        TextStyle style = text.getStyle();
-//                        HoverAction hoverAction = null;
-//                        ClickAction clickAction = null;
-//                        ShiftClickAction shiftClickAction = null;
-//                        if (text.getHoverAction().isPresent()) {
-//                            // Checks for hover action
-//                            hoverAction = text.getHoverAction().get();
-//                        }
-//                        if (text.getClickAction().isPresent()) {
-//                            // Checks for hover action
-//                            clickAction = text.getClickAction().get();
-//                        }
-//                        if (text.getShiftClickAction().isPresent()) {
-//                            // Checks for hover action
-//                            shiftClickAction = text.getShiftClickAction().get();
-//                        }
-//                        tmp = Text.of(color, style, hoverAction, clickAction, shiftClickAction, content);
-//                    } else {
-//                        // If there is no indicator don't change the Text object
-//                        tmp = text;
-//                    }
-//                    newBody.toBuilder().append(tmp).build();
-//                }
-//                event.setMessage(list.get(0), Text.of(newBody), list.get(2));
-//                return;
-//            }
         }
     }
 
@@ -115,15 +55,14 @@ public class MessageParser {
      */
     private String replace(String string){
         String newBody = "";
-        int lastIndex = 0;
-        int finalIndex = 0;
+        int lastIndex = 0, finalIndex = 0;
         while (lastIndex != -1){
-            // Iterate until there is no more '~' chars
+            // Iterate until there is no more indicator chars
             lastIndex = string.indexOf(this.indicator, lastIndex);
             if (lastIndex != -1){
-                newBody += string.substring(0, lastIndex);
+                newBody += string.substring(finalIndex, lastIndex);
                 String sub = string.substring(lastIndex + 1, string.length());
-                String key = sub.split("[\"',.<>?/\\-+=*!@#$~%^&(){}\\[\\]` ]")[0];
+                String key = sub.split("[\"':;,.<>?/\\-+=*!@#$~%^&(){}\\[\\]` ]")[0];
                 if (this.emoticonMapping.containsKey(key)){
                     // If the word preceding the indicator is in the map the replacement is made
                     newBody += this.emoticonMapping.get(key);
@@ -131,7 +70,7 @@ public class MessageParser {
                     finalIndex = lastIndex + key.length();
                 } else {
                     // If the word preceding the indicator is not in the map the original text is put back
-                    newBody += "~" + key;
+                    newBody += this.indicator + key;
                     lastIndex++;
                     finalIndex = lastIndex + key.length();
                 }
@@ -147,6 +86,85 @@ public class MessageParser {
      * @return - boolean - whether or not it has the indicator char
      */
     private boolean hasIndicator(String string){
-        return string.indexOf(this.indicator) != -1;
+        return string.contains(this.indicator + "");
+    }
+
+    /**
+     * TODO
+     * @param string - TODO
+     * @return - Text - TODO
+     */
+    private Text formatString(String string){
+        if (!string.contains("&")){
+            return Text.of(string);
+        }
+        String[] sections = string.split("&");
+        ArrayList<Text> textArray = new ArrayList<>();
+        for (int i = 1, j = 0; i < sections.length; i++, j++) {
+            String format = sections[i].charAt(0) + "";
+            if (format.toLowerCase().matches("^[a-fk-or0-9]+$")){
+                textArray.add(Text.of(getFormat(format.charAt(0)), sections[i].substring(1, sections[i].length())));
+            } else {
+                textArray.add(Text.of("&" + sections[i]));
+            }
+        }
+        return Text.builder().append(textArray).build();
+    }
+
+    /**
+     * TODO
+     * @param format - TODO
+     * @return - TextElement - TODO
+     */
+    private TextElement getFormat(char format){
+        switch (format){
+            case '0':
+                return TextColors.BLACK;
+            case '1':
+                return TextColors.DARK_GREEN;
+            case '2':
+                return TextColors.DARK_BLUE;
+            case '3':
+                return TextColors.DARK_AQUA;
+            case '4':
+                return TextColors.DARK_RED;
+            case '5':
+                return TextColors.DARK_PURPLE;
+            case '6':
+                return TextColors.GOLD;
+            case '7':
+                return TextColors.GRAY;
+            case '8':
+                return TextColors.DARK_GRAY;
+            case '9':
+                return TextColors.BLUE;
+            case 'a':
+                return TextColors.GREEN;
+            case 'b':
+                return TextColors.AQUA;
+            case 'c':
+                return TextColors.RED;
+            case 'd':
+                return TextColors.LIGHT_PURPLE;
+            case 'e':
+                return TextColors.YELLOW;
+            case 'f':
+                return TextColors.WHITE;
+            case 'k':
+                return TextStyles.OBFUSCATED;
+            case 'l':
+                return TextStyles.BOLD;
+            case 'm':
+                return TextStyles.STRIKETHROUGH;
+            case 'n':
+                return TextStyles.UNDERLINE;
+            case 'o':
+                return TextStyles.ITALIC;
+            case 'r':
+                return TextStyles.RESET;
+            default:
+                // Should never get here
+                return null;
+        }
     }
 }
