@@ -1,16 +1,22 @@
 package com.servegame.bl4de.EmoticonChat;
 
 import com.google.inject.Inject;
+import com.servegame.bl4de.EmoticonChat.commands.EC.EC;
+import com.servegame.bl4de.EmoticonChat.commands.EC.ECAdd;
+import com.servegame.bl4de.EmoticonChat.commands.EC.ECHelp;
+import com.servegame.bl4de.EmoticonChat.commands.EC.ECList;
 import com.servegame.bl4de.EmoticonChat.util.Config;
 import com.servegame.bl4de.EmoticonChat.util.MessageParser;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.text.Text;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -65,6 +71,40 @@ public class EmoticonChat {
         this.indicator = this.config.getIndicator();
         this.emoticonMapping = this.config.getEmoticonMapping();
         this.parser = new MessageParser(this.emoticonMapping, this.indicator, this);
+
+        // Register /EC
+        // /EC Add
+        CommandSpec ECAdd = CommandSpec.builder()
+                .description(Text.of("Add replacement rules"))
+                .permission("ec.add.base")
+                //.arguments() TODO
+                .executor(new ECAdd())
+                .build();
+
+        // /EC Help
+        CommandSpec ECHelp = CommandSpec.builder()
+                .description(Text.of("Show EmoticonChat commands and their respective usages"))
+                .permission("ec.help.base")
+                .executor(new ECHelp())
+                .build();
+
+        // /EC List
+        CommandSpec ECList = CommandSpec.builder()
+                .description(Text.of("Shows current possible replacements"))
+                .executor(new ECList(this.emoticonMapping))
+                .permission("ec.list.base")
+                .build();
+
+        // /EC
+        CommandSpec EC = CommandSpec.builder()
+                .description(Text.of("Basic information regarding EmoticonChat"))
+                .child(ECAdd, "add")
+                .child(ECHelp, "help", "?", "commands")
+                .child(ECList, "list", "l")
+                .permission("ec.base")
+                .executor(new EC(this))
+                .build();
+        this.game.getCommandManager().register(this, EC, "ec");
     }
 
     @Listener
