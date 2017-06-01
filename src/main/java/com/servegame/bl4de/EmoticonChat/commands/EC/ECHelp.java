@@ -5,6 +5,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.text.Text;
 
 /**
  * File: ECHelp.java
@@ -13,6 +14,7 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 public class ECHelp implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        return CommandResult.empty();
+        src.sendMessage(Text.of("Not implemented yet..."));
+        return CommandResult.success();
     }
 }
