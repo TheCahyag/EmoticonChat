@@ -3,16 +3,16 @@
 TODO
 
 ## Commands
-/EC (Not implemented yet)__
-/EC Help (Not implemented yet)__
-/EC Add <tag> <replacement> (Not implemented yet)__
-/EC List - Shows the list of replacements __
+/EC (Not implemented yet)<br/>
+/EC Help (Not implemented yet)<br/>
+/EC Add <tag> <replacement> (Not implemented yet)<br/>
+/EC List - Shows the list of replacements <br/>
 
 ## Permissions
-`ec.base` - /EC__
-`ec.help.base` - /EC Help__
-`ec.list.base` - /EC List__
-`ec.add.base` - /EC Add <tag> <replacement>__
+`ec.base` - /EC<br/>
+`ec.help.base` - /EC Help<br/>
+`ec.list.base` - /EC List<br/>
+`ec.add.base` - /EC Add <tag> <replacement><br/>
 
 ## TODO
 * ~~Allow it to coincide with colored chat~~
