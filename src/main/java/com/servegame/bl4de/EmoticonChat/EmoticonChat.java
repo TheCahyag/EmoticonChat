@@ -10,6 +10,7 @@ import com.servegame.bl4de.EmoticonChat.util.MessageParser;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameLoadCompleteEvent;
@@ -114,6 +115,8 @@ public class EmoticonChat {
 
     @Listener
     public void onMessage(MessageEvent event){
-        this.parser.parseMessage(event);
+        if (event.getCause().root() instanceof User){
+            this.parser.parseMessage(event);
+        }
     }
 }
